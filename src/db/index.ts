@@ -15,11 +15,29 @@ export const pool = new Pool({
 export const initDB = async () => {
 
     try {
+
         await pool.query(`
-            CREATE TYPE role_type AS ENUM(
-                'contributor',
-                'maintainer'
-            )
+            DO $$ BEGIN
+                CREATE TYPE role_type AS ENUM('contributor', 'maintainer');
+            EXCEPTION WHEN duplicate_object THEN NULL;
+            END $$;
+        `);
+
+        await pool.query(`
+            DO $$ BEGIN
+                CREATE TYPE issue_type AS ENUM('bug', 'feature_request');
+            EXCEPTION WHEN duplicate_object THEN NULL;
+            END $$;
+        `);
+
+        await pool.query(`
+            DO $$ BEGIN
+                CREATE TYPE status_type AS ENUM('open', 'in_progress', 'resolved');
+            EXCEPTION WHEN duplicate_object THEN NULL;
+            END $$;
+        `);
+
+        await pool.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(20),
@@ -32,19 +50,10 @@ export const initDB = async () => {
         `);
 
         await pool.query(`
-            CREATE TYPE issue_type AS ENUM(
-                'bug',
-                'feature_request'
-            )
-            CREATE TYPE status_type AS ENUM(
-                'open',
-                'in_progress',
-                'resolved'
-            )
             CREATE TABLE IF NOT EXISTS issues (
                 id SERIAL PRIMARY KEY,
                 title VARCHAR(128),
-                description TEXT(),
+                description TEXT,
                 type issue_type NOT NULL DEFAULT 'bug',
                 status status_type NOT NULL DEFAULT 'open',
                 reporter_id INT REFERENCES users(id) ON DELETE CASCADE ,
