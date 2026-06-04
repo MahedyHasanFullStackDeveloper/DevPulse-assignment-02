@@ -4,6 +4,8 @@ import express, { type Application, type Request, type Response } from 'express'
 // import { authRoute } from './modules/auth/auth.route';
 import CookieParser from "cookie-parser";
 import cors from 'cors';
+import { authRoute } from './modules/auth/auth.route';
+import { issuesRoute } from './modules/issues/issues.route';
 // import globalErrorHandler from './middleware/globalErrorHandler';
 
 
@@ -25,5 +27,10 @@ app.get('/', (req: Request, res: Response) => {
         author: 'Next Level'
     });
 });
+
+
+app.use('/api/auth', authRoute);
+app.use('/api', issuesRoute);
+
 
 export default app; 

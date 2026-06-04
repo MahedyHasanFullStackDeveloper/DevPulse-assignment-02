@@ -15,35 +15,13 @@ export const pool = new Pool({
 export const initDB = async () => {
 
     try {
-
-        await pool.query(`
-            DO $$ BEGIN
-                CREATE TYPE role_type AS ENUM('contributor', 'maintainer');
-            EXCEPTION WHEN duplicate_object THEN NULL;
-            END $$;
-        `);
-
-        await pool.query(`
-            DO $$ BEGIN
-                CREATE TYPE issue_type AS ENUM('bug', 'feature_request');
-            EXCEPTION WHEN duplicate_object THEN NULL;
-            END $$;
-        `);
-
-        await pool.query(`
-            DO $$ BEGIN
-                CREATE TYPE status_type AS ENUM('open', 'in_progress', 'resolved');
-            EXCEPTION WHEN duplicate_object THEN NULL;
-            END $$;
-        `);
-
         await pool.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
-                name VARCHAR(20),
-                email VARCHAR(20) UNIQUE NOT NULL,
+                name VARCHAR(64) NOT NULL,
+                email VARCHAR(64) UNIQUE NOT NULL,
                 password TEXT NOT NULL,
-                role role_type NOT NULL DEFAULT 'contributor',
+                role VARCHAR(64) NOT NULL DEFAULT 'contributor',
                 created_at TIMESTAMP DEFAULT NOW(),
                 updated_at TIMESTAMP DEFAULT NOW()
             );
@@ -52,10 +30,10 @@ export const initDB = async () => {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS issues (
                 id SERIAL PRIMARY KEY,
-                title VARCHAR(128),
+                title VARCHAR(128) NOT NULL,
                 description TEXT,
-                type issue_type NOT NULL DEFAULT 'bug',
-                status status_type NOT NULL DEFAULT 'open',
+                type VARCHAR(64) NOT NULL DEFAULT 'bug',
+                status  VARCHAR(64) NOT NULL DEFAULT 'open',
                 reporter_id INT REFERENCES users(id) ON DELETE CASCADE ,
                 created_at TIMESTAMP DEFAULT NOW(),
                 updated_at TIMESTAMP DEFAULT NOW()
