@@ -31,7 +31,7 @@ export const initDB = async () => {
             CREATE TABLE IF NOT EXISTS issues (
                 id SERIAL PRIMARY KEY,
                 title VARCHAR(128) NOT NULL,
-                description TEXT,
+                description TEXT NOT NULL,
                 type VARCHAR(64) NOT NULL DEFAULT 'bug',
                 status  VARCHAR(64) NOT NULL DEFAULT 'open',
                 reporter_id INT REFERENCES users(id) ON DELETE CASCADE ,

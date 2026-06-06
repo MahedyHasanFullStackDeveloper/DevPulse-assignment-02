@@ -7,7 +7,6 @@ import jwt, { type JwtPayload, type SignOptions } from 'jsonwebtoken';
 
 
 const createUserIntoDB = async ({ name, email, password, role }: IUser) => {
-    console.log({ name, email, password, role });
 
     const hashPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(`

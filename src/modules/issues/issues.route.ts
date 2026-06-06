@@ -10,8 +10,8 @@ const router = Router();
 router.post('/issues', auth(USER_ROLES.maintainer, USER_ROLES.contributor), issuesController.createIssues);
 router.get('/issues', issuesController.getIssues);
 router.get('/issues/:id', issuesController.getSingleIssues);
-// router.post('/login', authController.loginUser);
-// router.post('/issues', auth(USER_ROLES.maintainer), issuesController.createIssues);
+router.put('/issues/:id', auth(USER_ROLES.maintainer, USER_ROLES.contributor), issuesController.updateSingleIssues);
+router.delete('/issues/:id', auth(USER_ROLES.maintainer), issuesController.deleteSingleIssues);
 
 
 export const issuesRoute = router;

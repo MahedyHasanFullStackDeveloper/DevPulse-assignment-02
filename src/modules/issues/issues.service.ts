@@ -46,13 +46,13 @@ const getAllIssuesDB = async (parameter: string) => {
     }
     else if (parameter == 'in_progress') {
         const result = await pool.query(`
-        SELECT * FROM issues WHERE type=$1
+        SELECT * FROM issues WHERE status=$1
     `, [parameter]);
         return result.rows;
     }
     else if (parameter == 'resolved') {
         const result = await pool.query(`
-        SELECT * FROM issues WHERE type=$1
+        SELECT * FROM issues WHERE status=$1
     `, [parameter]);
         return result.rows;
     }
@@ -73,8 +73,50 @@ const getSingleIssuesDB = async (parameter: string) => {
     return result.rows[0];
 }
 
+
+const updateSingleIssuesDB = async (parameter: string, payload: Iissue) => {
+
+    const { title, description, type, status } = payload;
+    const result = await pool.query(`
+        SELECT * FROM issues WHERE id=$1
+    `, [parameter]);
+
+    if (result.rows[0].length === 0) {
+        throw Error("Issue Not Exists!");
+    }
+    return await pool.query(`
+                UPDATE issues 
+                SET 
+                    title = COALESCE($1, title),
+                    description = COALESCE($2, description),
+                    type = COALESCE($3, type),
+                    status = COALESCE($4, status)
+                WHERE id = $5
+                RETURNING *
+            `, [title, description, type, status, result.rows[0].id]);
+}
+
+
+const deleteSingleIssuesDB = async (parameter: string) => {
+
+    const result = await pool.query(`
+        SELECT * FROM issues WHERE id=$1
+    `, [parameter])
+
+    if (result.rows.length === 0) {
+        throw Error("Issue Not Found!");
+    }
+
+    return await pool.query(`
+            DELETE FROM issues WHERE id=$1 RETURNING *
+        `, [parameter]);
+
+}
+
 export const issueService = {
     createIssueIntoDB: createIssueIntoDB,
     getAllIssuesDB: getAllIssuesDB,
-    getSingleIssuesDB: getSingleIssuesDB
+    getSingleIssuesDB: getSingleIssuesDB,
+    deleteSingleIssuesDB: deleteSingleIssuesDB,
+    updateSingleIssuesDB: updateSingleIssuesDB
 }
