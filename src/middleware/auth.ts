@@ -26,12 +26,6 @@ const auth = (...roles: any) => {
                     "message": "Unauthorized access!",
                 })
             }
-            // if (roles.length && !roles.includes(user.role)) {
-            //     return res.status(403).json({
-            //         'success': false,
-            //         'message': "access forbidden!"
-            //     })
-            // }
             req.user = decoded;
             next();
         } catch (error) {

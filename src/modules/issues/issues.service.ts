@@ -2,7 +2,7 @@ import { pool } from "../../db";
 import type { IUser } from "../auth/auth.interface";
 import type { Iissue } from "./issues.interface";
 
-const createIssueIntoDB = async (payload: Iissue, user: IUser) => {
+const createIssueIntoDB = async (payload: Iissue, user: any) => {
     const { title, description, type, status } = payload;
     const result = await pool.query(`
             INSERT INTO issues (title, description , type , status , reporter_id) 
@@ -40,7 +40,7 @@ const getAllIssuesDB = async (parameter: string) => {
     }
     else if (parameter == 'open') {
         const result = await pool.query(`
-        SELECT * FROM issues WHERE type=$1
+        SELECT * FROM issues WHERE status=$1
     `, [parameter]);
         return result.rows;
     }
